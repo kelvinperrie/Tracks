@@ -1,0 +1,11 @@
+
+body {
+    font-family: 'Hind Siliguri', sans-serif !important;
+    background-color: #EEE2DC;
+    color: #37B;
+}
+
+canvas {
+    border: 1px solid #d0d0d0;
+    background-color: #fff;
+}
