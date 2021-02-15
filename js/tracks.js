@@ -322,11 +322,8 @@ var gameModel = function() {
         return noMatches;
     };
     self.CheckForConnectionMatch = function(tile, side, fromEdge) {
-        var neighborTile = self.GetNeighborTile(tile, side, fromEdge);
-        var text = "NOT FOUND"
-        if(neighborTile && neighborTile.text) {
-            text = neighborTile.text;
-        }
+        var neighborTile = self.GetNeighborTile(tile, side);
+        
         if(neighborTile && neighborTile.text) {
             // go through all the connections on the neighbor tile and see if they have a connection we can match with
             var sideToFind = self.WhatIsOppositeSide(side);
@@ -344,7 +341,7 @@ var gameModel = function() {
         }
         return false;
     };
-    self.GetNeighborTile = function(tile, side, fromEdge) {
+    self.GetNeighborTile = function(tile, side) {
         if(side == "top" && tile.y > 0) {
             return self.GetTileAtCoordinates(tile.x,tile.y-1);
         } else if(side == "bottom" && tile.y < self.gameData.tileCountInHeight) {
