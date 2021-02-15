@@ -120,7 +120,8 @@ var gameModel = function() {
         for(var i = 0; i < gameData.tiles.length; i++) {
             var newTile = gameData.tiles[i];
             // set some defaults if not passed in the data
-            if(!newTile.isMoveable) {
+            if(!newTile.hasOwnProperty('isMoveable')) {
+                console.log("set is movable for " + newTile.text)
                 newTile.isMoveable = true;
             }
             self.board[newTile.y][newTile.x] = newTile;
@@ -205,6 +206,18 @@ var gameModel = function() {
                 }
             }
         }
+        // draw an indicator around the selected tile
+        if(self.selectedTile && self.selectedTile.text) {
+            var xpos = self.selectedTile.x * self.tileWidth;
+            var ypos = self.selectedTile.y * self.tileHeight;
+            self.ctx.save();
+            self.ctx.strokeStyle = 'yellow';
+            self.ctx.lineWidth = "3";
+            self.ctx.beginPath();
+            self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
+            self.ctx.stroke();
+            self.ctx.restore();
+        }
 
         setTimeout(self.DrawLoop, 100);
     }
@@ -226,6 +239,11 @@ var gameModel = function() {
         // was the click on a tile?
         var clickedTile = self.GetTileAtPixels(clickX, clickY);
         if(clickedTile && clickedTile.text) {
+            // have they clicked one that is not movable? do nothing ... well, clear the selected I guess?
+            if(!clickedTile.isMoveable) {
+                self.ClearSelectedTile();
+                return;
+            }
             // do we already have a tile selected?
             if(self.selectedTile) {
                 // is the selected tile the same as the one just clicked?
