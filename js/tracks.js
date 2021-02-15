@@ -9,6 +9,12 @@ var gameModel = function() {
     self.tileHeight = 100;
     self.tileWidth = 100;
     self.showIds = false;
+    self.colours = {
+        default: "#552255",
+        moveable: "#993366",
+        track1: "#FFAA66",
+        selection: "#FFFFFF"
+    }
 
     self.selectedTile = null;
 
@@ -99,7 +105,11 @@ var gameModel = function() {
                     var xpos = x * self.tileWidth;
                     var ypos = y * self.tileHeight;
                     self.ctx.save();
-                    self.ctx.fillStyle = 'green';
+                    if(tile.isMoveable) {
+                        self.ctx.fillStyle = self.colours.moveable;
+                    } else {
+                        self.ctx.fillStyle = self.colours.default;
+                    }
                     self.ctx.fillRect(xpos,ypos,self.tileWidth,self.tileHeight);
                     if(self.showIds) {
                         self.ctx.font = '20px serif';
@@ -113,10 +123,12 @@ var gameModel = function() {
                             var end =   self.GetCoordinatesForConnection(xpos,ypos,tile.connections[c].side2,tile.connections[c].fromEdge2);
                             self.ctx.save();
                             self.ctx.beginPath();
+                            self.ctx.strokeStyle = self.colours.track1;
                             self.ctx.moveTo(start.x, start.y);
+                            self.ctx.lineWidth = "2";
                             if(self.IsConnectionACurve(tile.connections[c])) {
                                 // todo this only works if height and width = 100
-                                ctx.arcTo(xpos+50, ypos+50, end.x, end.y, 50);
+                                ctx.arcTo(xpos+self.tileWidth/2, ypos+self.tileHeight/2, end.x, end.y, 50);
                             } else {
                                 self.ctx.lineTo(end.x, end.y);
                             }
@@ -133,7 +145,7 @@ var gameModel = function() {
             var xpos = self.selectedTile.x * self.tileWidth;
             var ypos = self.selectedTile.y * self.tileHeight;
             self.ctx.save();
-            self.ctx.strokeStyle = 'yellow';
+            self.ctx.strokeStyle = self.colours.selection;
             self.ctx.lineWidth = "3";
             self.ctx.beginPath();
             self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
@@ -168,7 +180,7 @@ var gameModel = function() {
             }
             // do we already have a tile selected?
             if(self.selectedTile) {
-                // is the selected tile the same as the one just clicked?
+                // is the selected tile the same as the one just clicked? if yes then deselected it, if no then select the clicked one
                 if(self.selectedTile.id == clickedTile.id) {
                     self.ClearSelectedTile();
                     console.log("clicked the selected tile again, so clearing selected")
@@ -183,6 +195,9 @@ var gameModel = function() {
                 console.log("setting tile as selected")
                 self.SetSelectedTile(clickedTile);
             }
+        } else {
+            // clicked out of the tiles somewhere
+            self.ClearSelectedTile();
         }
     }
 
@@ -194,7 +209,7 @@ var gameModel = function() {
 
     self.SwapTiles = function(tile1, tile2) {
         
-        var t1id = tile1.id.valueOf();
+        var t1id = tile1.id;
         var t1con = tile1.connections;
 
         self.board[tile1.y][tile1.x].id = tile2.id;
