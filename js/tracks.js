@@ -1,89 +1,5 @@
 
-var gameData = {
-    tileCountInWidth : 6,
-    tileCountInHeight : 5,
-    tiles : [
-        {
-            x: 2,
-            y: 1,
-            text: "0 0",
-            connections: [
-                { 
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 2,
-            y: 3,
-            text: "wow",
-            connections: [
-                { 
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "right",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 2,
-            y: 2,
-            text: "hi",
-            connections: [
-                { 
-                    side1: "bottom",
-                    fromEdge1: 50,
-                    side2: "left",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 1,
-            text: "hi3",
-            connections: [
-                { 
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 2,
-            text: "hi2",
-            connections: [
-                { 
-                    side1: "right",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 3,
-            text: "hi1",
-            isMoveable: false,
-            connections: [
-                { 
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "left",
-                    fromEdge2: 50
-                }
-            ]
-        }
-    ]
-};
+
 
 var gameModel = function() {
     var self = this;
@@ -92,6 +8,7 @@ var gameModel = function() {
     self.gameData;
     self.tileHeight = 100;
     self.tileWidth = 100;
+    self.showIds = false;
 
     self.selectedTile = null;
 
@@ -101,27 +18,27 @@ var gameModel = function() {
     self.SetupBoard = function(gameData) {
         self.gameData = gameData;
         
-        // setup the size of the canvas
+        // setup the size of the canvas - I guess they can be different sizes?
+        // we set the values in the attributes rather than in the css because otherwise some weird scaling thing happens
         var canvasWidth = self.tileWidth * self.gameData.tileCountInWidth;
-        //$('#canvas').css("width", canvasWidth + "px");
         $('#canvas').attr("width", canvasWidth);
         var canvasHeight = self.tileHeight * self.gameData.tileCountInHeight;
-        //$('#canvas').css("height", canvasHeight + "px");
         $('#canvas').attr("height", canvasHeight);
 
+        // create the tiles we need
         self.board = [gameData.tileCountInHeight];
-
         // for each row add in a column
         for(var i = 0; i < gameData.tileCountInHeight; i++) {
-            var boop = [{},{},{},{},{},{}]; // todo fix me
-            self.board[i] = boop;
+            // make an array of however many columns/width we need and populate it with empty objects
+            self.board[i] = Array(gameData.tileCountInWidth).fill({});
         }
-        // for each tile, put it into the board
+
+        // for each tile we have in our game data, put its details into the board
         for(var i = 0; i < gameData.tiles.length; i++) {
             var newTile = gameData.tiles[i];
             // set some defaults if not passed in the data
             if(!newTile.hasOwnProperty('isMoveable')) {
-                console.log("set is movable for " + newTile.text)
+                console.log("set is movable for " + newTile.id)
                 newTile.isMoveable = true;
             }
             self.board[newTile.y][newTile.x] = newTile;
@@ -130,6 +47,8 @@ var gameModel = function() {
     };
     self.SetupBoard(gameData);
 
+    // a connection has coordinates relative to the tile it is on, this method returns the absolute coordinates for 
+    // the connection based on where the file is on the board
     self.GetCoordinatesForConnection = function(tileXPos, tileYPos, side, fromEdge) {
         if(side == "top") {
             return {
@@ -156,6 +75,8 @@ var gameModel = function() {
         }
     };
 
+    // returns true/false if the connection is a curve vs straight line
+    // used when determining how to draw the line on the tile
     self.IsConnectionACurve = function(connection) {
         if((connection.side1 == "left" || connection.side1 == "right") && (connection.side2 == "top" || connection.side2 == "bottom")) {
             return true;
@@ -166,7 +87,7 @@ var gameModel = function() {
         return false;
     }
 
-
+    // this draws the game tiles
     self.DrawLoop = function() {
         self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
 
@@ -174,16 +95,17 @@ var gameModel = function() {
         for(var y = 0; y < self.board.length; y++) {
             for(var x = 0; x < self.gameData.tileCountInWidth; x++) {
                 var tile = self.board[y][x];
-                if(tile && tile.text) {
+                if(tile && tile.id) {
                     var xpos = x * self.tileWidth;
                     var ypos = y * self.tileHeight;
                     self.ctx.save();
                     self.ctx.fillStyle = 'green';
                     self.ctx.fillRect(xpos,ypos,self.tileWidth,self.tileHeight);
-                    //self.ctx.stroke;
-                    self.ctx.font = '20px serif';
-                    self.ctx.fillStyle = 'blue';
-                    self.ctx.fillText(tile.text, xpos, ypos + 20);
+                    if(self.showIds) {
+                        self.ctx.font = '20px serif';
+                        self.ctx.fillStyle = 'blue';
+                        self.ctx.fillText(tile.id, xpos, ypos + 20);
+                    }
                     // draw any connections on this tile
                     if(tile.connections) {
                         for(var c = 0; c < tile.connections.length; c++) {
@@ -207,7 +129,7 @@ var gameModel = function() {
             }
         }
         // draw an indicator around the selected tile
-        if(self.selectedTile && self.selectedTile.text) {
+        if(self.selectedTile && self.selectedTile.id) {
             var xpos = self.selectedTile.x * self.tileWidth;
             var ypos = self.selectedTile.y * self.tileHeight;
             self.ctx.save();
@@ -223,7 +145,7 @@ var gameModel = function() {
     }
     self.DrawLoop();
 
-
+    // setup any handlers
     $(document).ready(function() {
         $("#canvas").on("click", function(event) {
             var offset = $(this).offset();
@@ -238,7 +160,7 @@ var gameModel = function() {
     self.HandleClick = function(clickX, clickY) {
         // was the click on a tile?
         var clickedTile = self.GetTileAtPixels(clickX, clickY);
-        if(clickedTile && clickedTile.text) {
+        if(clickedTile && clickedTile.id) {
             // have they clicked one that is not movable? do nothing ... well, clear the selected I guess?
             if(!clickedTile.isMoveable) {
                 self.ClearSelectedTile();
@@ -247,7 +169,7 @@ var gameModel = function() {
             // do we already have a tile selected?
             if(self.selectedTile) {
                 // is the selected tile the same as the one just clicked?
-                if(self.selectedTile.text == clickedTile.text) {
+                if(self.selectedTile.id == clickedTile.id) {
                     self.ClearSelectedTile();
                     console.log("clicked the selected tile again, so clearing selected")
                 } else {
@@ -263,6 +185,8 @@ var gameModel = function() {
             }
         }
     }
+
+    // checks to see if the game is complete
     self.CheckForCompletion = function() {
         var noMatches = self.CheckAllConnectionsHaveMatches();
         console.log(noMatches);
@@ -270,15 +194,16 @@ var gameModel = function() {
 
     self.SwapTiles = function(tile1, tile2) {
         
-        var t1text = tile1.text.valueOf();
+        var t1id = tile1.id.valueOf();
         var t1con = tile1.connections;
 
-        self.board[tile1.y][tile1.x].text = tile2.text;
+        self.board[tile1.y][tile1.x].id = tile2.id;
         self.board[tile1.y][tile1.x].connections = tile2.connections;
-        self.board[tile2.y][tile2.x].text = t1text;
+        self.board[tile2.y][tile2.x].id = t1id;
         self.board[tile2.y][tile2.x].connections = t1con;
 
     };
+    // returns whatever tile the user has clicked on (if any)
     self.GetTileAtPixels = function(clickX, clickY) {
         var x = Math.floor(clickX / self.tileWidth);
         var y = Math.floor(clickY / self.tileHeight);
@@ -290,18 +215,20 @@ var gameModel = function() {
     self.ClearSelectedTile = function() {
         self.selectedTile = null;
     };
+    // given x and y coordinates get the tile that matches
     self.GetTileAtCoordinates = function(x,y) {
         var tile = self.board[y][x];
         return tile;
     };
 
+    // returns a list of tile ids that don't have connections matches up with a neighbour
     self.CheckAllConnectionsHaveMatches = function() {
         // go through each tile and confirm that for each connection it has there is a tile next to it with a connection
         var noMatches = [];
         for(var r =0; r < self.board.length; r++) {
             for(var c=0; c < self.board[r].length; c++) {
                 var tile = self.board[r][c];
-                if(tile.text) { // is this a tile or empty spot?
+                if(tile.id) { // is this a tile or empty spot?
                     var hasMatches = true;
                     for(var con = 0; con < tile.connections.length; con++) {
                         var connect = tile.connections[con];
@@ -311,20 +238,21 @@ var gameModel = function() {
                         }
                     }
                     if(hasMatches) {
-                        console.log(tile.text + " DOES have all matches");
+                        console.log(tile.id + " DOES have all matches");
                     } else {
-                        console.log(tile.text + " doesn't have all matches");
-                        noMatches.push(tile.text);
+                        console.log(tile.id + " doesn't have all matches");
+                        noMatches.push(tile.id);
                     }
                 }
             }
         }
         return noMatches;
     };
+    // check a single tile to see if the connections it has have matches
     self.CheckForConnectionMatch = function(tile, side, fromEdge) {
         var neighborTile = self.GetNeighborTile(tile, side);
         
-        if(neighborTile && neighborTile.text) {
+        if(neighborTile && neighborTile.id) {
             // go through all the connections on the neighbor tile and see if they have a connection we can match with
             var sideToFind = self.WhatIsOppositeSide(side);
             if(neighborTile.connections) {
@@ -341,6 +269,7 @@ var gameModel = function() {
         }
         return false;
     };
+    // get the neightbour of the supplied tile, in the direction specified by 'side'
     self.GetNeighborTile = function(tile, side) {
         if(side == "top" && tile.y > 0) {
             return self.GetTileAtCoordinates(tile.x,tile.y-1);
@@ -353,6 +282,7 @@ var gameModel = function() {
         }
         return null;
     };
+    // determines the opposide side of a given side
     self.WhatIsOppositeSide = function(side) {
         if(side == "top") {
             return "bottom";
