@@ -9,3 +9,37 @@ canvas {
     border: 1px solid #d0d0d0;
     background-color: #552255;
 }
+
+.clickable {
+    cursor: pointer;
+    user-select: none;
+}
+.clickable:hover {
+    text-decoration: underline;
+}
+.header {
+    text-align: left;
+    position: relative;
+    height: 60px;
+}
+.previous-menu {
+    position: absolute;
+    left: 0;
+}
+.next-menu {
+    position: absolute;
+    right : 0;
+    top: 0;
+}
+
+.title {
+    text-align: center;
+    font-size: 2em;
+    padding-top: 0.3em;
+}
+
+.content {
+    margin: auto;
+    width: 600px;
+    text-align: center;
+}

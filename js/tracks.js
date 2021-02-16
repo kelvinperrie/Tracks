@@ -1,14 +1,14 @@
 
 
 
-var gameModel = function() {
+var GameModel = function(gameData) {
     var self = this;
 
     self.board;
-    self.gameData;
+    self.gameData = gameData;
     self.tileHeight = 100;
     self.tileWidth = 100;
-    self.showIds = false;
+    self.showIds = true;
     self.colours = {
         default: "#552255",
         moveable: "#993366",
@@ -51,7 +51,7 @@ var gameModel = function() {
         }
 
     };
-    self.SetupBoard(gameData);
+    self.SetupBoard(self.gameData);
 
     // a connection has coordinates relative to the tile it is on, this method returns the absolute coordinates for 
     // the connection based on where the file is on the board
@@ -113,7 +113,7 @@ var gameModel = function() {
                     self.ctx.fillRect(xpos,ypos,self.tileWidth,self.tileHeight);
                     if(self.showIds) {
                         self.ctx.font = '20px serif';
-                        self.ctx.fillStyle = 'blue';
+                        self.ctx.fillStyle = self.colours.selection;
                         self.ctx.fillText(tile.id, xpos, ypos + 20);
                     }
                     // draw any connections on this tile
@@ -128,7 +128,7 @@ var gameModel = function() {
                             self.ctx.lineWidth = "2";
                             if(self.IsConnectionACurve(tile.connections[c])) {
                                 // todo this only works if height and width = 100
-                                ctx.arcTo(xpos+self.tileWidth/2, ypos+self.tileHeight/2, end.x, end.y, 50);
+                                self.ctx.arcTo(xpos+self.tileWidth/2, ypos+self.tileHeight/2, end.x, end.y, 50);
                             } else {
                                 self.ctx.lineTo(end.x, end.y);
                             }
@@ -205,6 +205,13 @@ var gameModel = function() {
     self.CheckForCompletion = function() {
         var noMatches = self.CheckAllConnectionsHaveMatches();
         console.log(noMatches);
+        if(noMatches.length == 0) {
+            self.NotifyLevelComplete();
+        }
+    };
+    
+    self.NotifyLevelComplete = function() {
+        
     };
 
     self.SwapTiles = function(tile1, tile2) {
@@ -311,4 +318,68 @@ var gameModel = function() {
     }
 }
 
-gameModel();
+var GameController = function() {
+    var self = this;
+
+    self.currentLevel = 0;
+    self.gameData = gameData;
+    self.gameModel = new GameModel(gameData[self.currentLevel]);
+
+    self.DisplayLevelInfo = function() {
+        console.log("updating level info")
+        var title = self.gameModel.gameData.level + ": " + self.gameModel.gameData.title;
+        console.log(title);
+        $(".title").html(title);
+        if(self.IsANextLevel()) {
+            $(".next-level-trigger").addClass("clickable");
+        } else {
+            $(".next-level-trigger").removeClass("clickable");
+        }
+        if(self.IsAPreviousLevel()) {
+            $(".previous-level-trigger").addClass("clickable");
+        } else {
+            $(".previous-level-trigger").removeClass("clickable");
+        }
+    };
+    self.LoadCurrentLevel = function() {
+        //self.gameModel = new GameModel(gameData[self.currentLevel]);
+        self.gameModel.SetupBoard(self.gameData[self.currentLevel]);
+        self.DisplayLevelInfo();
+    }
+    self.GotoSpecificLevel = function(level) {
+        self.currentLevel = level;
+        self.LoadCurrentLevel();
+    }
+    self.GotoNextLevel = function() {
+        console.log("going to next level")
+        if(self.IsANextLevel()) {
+            self.currentLevel++;
+            self.LoadCurrentLevel();
+        }
+    }
+    self.GotoPreviousLevel = function() {
+        console.log("going to previous level")
+        if(self.IsAPreviousLevel()) {
+            self.currentLevel--;
+            self.LoadCurrentLevel();
+        }
+    }
+    self.IsANextLevel = function() {
+        return (self.currentLevel < self.gameData.length -1);
+    }
+    self.IsAPreviousLevel = function() {
+        return (self.currentLevel > 0);
+    }
+
+    self.Initialize = function() {
+        self.LoadCurrentLevel();
+    }
+    self.Initialize();
+
+    $(document).ready(function() {
+        $(".next-level-trigger").on("click", self.GotoNextLevel);
+        $(".previous-level-trigger").on("click", self.GotoPreviousLevel);
+    });
+}
+
+GameController();
