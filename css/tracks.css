@@ -1,12 +1,12 @@
 
 body {
     font-family: 'Hind Siliguri', sans-serif !important;
-    background-color: #EEE2DC;
-    color: #37B;
+    background-color: #331133;
+    color: #fff;
 }
 
 canvas {
-    border: 1px solid #d0d0d0;
+    /* border: 1px solid #d0d0d0; */
     background-color: #552255;
 }
 
@@ -20,22 +20,38 @@ canvas {
 .header {
     text-align: left;
     position: relative;
-    height: 60px;
+    height: 100px;
+    background-image: url("../images/header-background.png");
+    background-color: #DD6655;
+}
+.menu-bar {
+    width: 100%;
+    text-align: right;
+}
+.clickable.menu-item {
+    color: #fff;
 }
 .previous-menu {
-    position: absolute;
-    left: 0;
+    /* position: absolute;
+    left: 0; */
+    display: inline-block;
+    margin-right: 1em;
+    color: gray;
 }
 .next-menu {
-    position: absolute;
+    /* position: absolute;
     right : 0;
-    top: 0;
+    top: 0; */
+    display: inline-block;
+    color: gray;
+    margin-right: 1em;
 }
 
 .title {
     text-align: center;
     font-size: 2em;
     padding-top: 0.3em;
+    height: 70px;
 }
 
 .content {
