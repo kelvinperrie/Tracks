@@ -13,8 +13,10 @@ var GameModel = function(gameData) {
         default: "#552255",
         moveable: "#993366",
         track1: "#FFAA66",
+        track2: "#FFF",
         selection: "#FFFFFF"
     }
+    self.trains = [];
 
     self.selectedTile = null;
 
@@ -44,14 +46,21 @@ var GameModel = function(gameData) {
             var newTile = gameData.tiles[i];
             // set some defaults if not passed in the data
             if(!newTile.hasOwnProperty('isMoveable')) {
-                console.log("set is movable for " + newTile.id)
                 newTile.isMoveable = true;
+            }
+            for(var c = 0; c < newTile.connections.length; c++) {
+                if(!newTile.connections[c].hasOwnProperty('trackType')) {
+                    newTile.connections[c].trackType = 1;
+                }
             }
             self.board[newTile.y][newTile.x] = newTile;
         }
 
+        //var train = new TrainModel(self, gameData.tiles[1], gameData.tiles[1].connections[0], { side: gameData.tiles[1].connections[0].side1, fromEdge: gameData.tiles[1].connections[0].fromEdge1 }, { side: gameData.tiles[1].connections[0].side2, fromEdge: gameData.tiles[1].connections[0].fromEdge2 })
+        //self.trains.push(train);
+
     };
-    self.SetupBoard(self.gameData);
+    //self.SetupBoard(self.gameData);
 
     // a connection has coordinates relative to the tile it is on, this method returns the absolute coordinates for 
     // the connection based on where the file is on the board
@@ -97,60 +106,72 @@ var GameModel = function(gameData) {
     self.DrawLoop = function() {
         self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
 
-        // draw each tile
-        for(var y = 0; y < self.board.length; y++) {
-            for(var x = 0; x < self.gameData.tileCountInWidth; x++) {
-                var tile = self.board[y][x];
-                if(tile && tile.id) {
-                    var xpos = x * self.tileWidth;
-                    var ypos = y * self.tileHeight;
-                    self.ctx.save();
-                    if(tile.isMoveable) {
-                        self.ctx.fillStyle = self.colours.moveable;
-                    } else {
-                        self.ctx.fillStyle = self.colours.default;
-                    }
-                    self.ctx.fillRect(xpos,ypos,self.tileWidth,self.tileHeight);
-                    if(self.showIds) {
-                        self.ctx.font = '20px serif';
-                        self.ctx.fillStyle = self.colours.selection;
-                        self.ctx.fillText(tile.id, xpos, ypos + 20);
-                    }
-                    // draw any connections on this tile
-                    if(tile.connections) {
-                        for(var c = 0; c < tile.connections.length; c++) {
-                            var start = self.GetCoordinatesForConnection(xpos,ypos,tile.connections[c].side1,tile.connections[c].fromEdge1);
-                            var end =   self.GetCoordinatesForConnection(xpos,ypos,tile.connections[c].side2,tile.connections[c].fromEdge2);
-                            self.ctx.save();
-                            self.ctx.beginPath();
-                            self.ctx.strokeStyle = self.colours.track1;
-                            self.ctx.moveTo(start.x, start.y);
-                            self.ctx.lineWidth = "2";
-                            if(self.IsConnectionACurve(tile.connections[c])) {
-                                // todo this only works if height and width = 100
-                                self.ctx.arcTo(xpos+self.tileWidth/2, ypos+self.tileHeight/2, end.x, end.y, 50);
-                            } else {
-                                self.ctx.lineTo(end.x, end.y);
-                            }
-                            self.ctx.stroke();
-                            self.ctx.restore();
+        if(self.board) {
+
+            // draw each tile
+            for(var y = 0; y < self.board.length; y++) {
+                for(var x = 0; x < self.gameData.tileCountInWidth; x++) {
+                    var tile = self.board[y][x];
+                    if(tile && tile.id) {
+                        var xpos = x * self.tileWidth;
+                        var ypos = y * self.tileHeight;
+                        self.ctx.save();
+                        if(tile.isMoveable) {
+                            self.ctx.fillStyle = self.colours.moveable;
+                        } else {
+                            self.ctx.fillStyle = self.colours.default;
                         }
+                        self.ctx.fillRect(xpos,ypos,self.tileWidth,self.tileHeight);
+                        if(self.showIds) {
+                            self.ctx.font = '20px serif';
+                            self.ctx.fillStyle = self.colours.selection;
+                            self.ctx.fillText(tile.id, xpos, ypos + 20);
+                        }
+                        // draw any connections on this tile
+                        if(tile.connections) {
+                            for(var c = 0; c < tile.connections.length; c++) {
+                                var start = self.GetCoordinatesForConnection(xpos,ypos,tile.connections[c].side1,tile.connections[c].fromEdge1);
+                                var end =   self.GetCoordinatesForConnection(xpos,ypos,tile.connections[c].side2,tile.connections[c].fromEdge2);
+                                self.ctx.save();
+                                self.ctx.beginPath();
+                                // todo fix me
+                                if(tile.connections[c].trackType == 1) {
+                                    self.ctx.strokeStyle = self.colours.track1;
+                                } else {
+                                    self.ctx.strokeStyle = self.colours.track2;
+                                }
+                                self.ctx.moveTo(start.x, start.y);
+                                self.ctx.lineWidth = "2";
+                                if(self.IsConnectionACurve(tile.connections[c])) {
+                                    // todo this only works if height and width = 100
+                                    self.ctx.arcTo(xpos+self.tileWidth/2, ypos+self.tileHeight/2, end.x, end.y, 50);
+                                } else {
+                                    self.ctx.lineTo(end.x, end.y);
+                                }
+                                self.ctx.stroke();
+                                self.ctx.restore();
+                            }
+                        }
+                        self.ctx.restore();
                     }
-                    self.ctx.restore();
                 }
             }
-        }
-        // draw an indicator around the selected tile
-        if(self.selectedTile && self.selectedTile.id) {
-            var xpos = self.selectedTile.x * self.tileWidth;
-            var ypos = self.selectedTile.y * self.tileHeight;
-            self.ctx.save();
-            self.ctx.strokeStyle = self.colours.selection;
-            self.ctx.lineWidth = "3";
-            self.ctx.beginPath();
-            self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
-            self.ctx.stroke();
-            self.ctx.restore();
+            // draw an indicator around the selected tile
+            if(self.selectedTile && self.selectedTile.id) {
+                var xpos = self.selectedTile.x * self.tileWidth;
+                var ypos = self.selectedTile.y * self.tileHeight;
+                self.ctx.save();
+                self.ctx.strokeStyle = self.colours.selection;
+                self.ctx.lineWidth = "3";
+                self.ctx.beginPath();
+                self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
+                self.ctx.stroke();
+                self.ctx.restore();
+            }
+            // draw any trains
+            for(var i = 0; i < self.trains.length; i++) {
+                self.trains[i].Draw(self.ctx);
+            }
         }
 
         setTimeout(self.DrawLoop, 100);
@@ -211,7 +232,7 @@ var GameModel = function(gameData) {
     };
     
     self.NotifyLevelComplete = function() {
-        
+
     };
 
     self.SwapTiles = function(tile1, tile2) {
@@ -254,15 +275,15 @@ var GameModel = function(gameData) {
                     var hasMatches = true;
                     for(var con = 0; con < tile.connections.length; con++) {
                         var connect = tile.connections[con];
-                        if(!self.CheckForConnectionMatch(tile, connect.side1, connect.fromEdge1) || !self.CheckForConnectionMatch(tile, connect.side2, connect.fromEdge2)) {
+                        if(!self.CheckForConnectionMatch(tile, connect.side1, connect.fromEdge1, connect.trackType) || !self.CheckForConnectionMatch(tile, connect.side2, connect.fromEdge2, connect.trackType)) {
                             hasMatches = false;
                             break;
                         }
                     }
                     if(hasMatches) {
-                        console.log(tile.id + " DOES have all matches");
+                        //console.log(tile.id + " DOES have all matches");
                     } else {
-                        console.log(tile.id + " doesn't have all matches");
+                        //console.log(tile.id + " doesn't have all matches");
                         noMatches.push(tile.id);
                     }
                 }
@@ -271,7 +292,7 @@ var GameModel = function(gameData) {
         return noMatches;
     };
     // check a single tile to see if the connections it has have matches
-    self.CheckForConnectionMatch = function(tile, side, fromEdge) {
+    self.CheckForConnectionMatch = function(tile, side, fromEdge, trackType) {
         var neighborTile = self.GetNeighborTile(tile, side);
         
         if(neighborTile && neighborTile.id) {
@@ -280,10 +301,10 @@ var GameModel = function(gameData) {
             if(neighborTile.connections) {
                 for(var c = 0; c < neighborTile.connections.length; c++) {
                     var con = neighborTile.connections[c];
-                    if(con.side1 == sideToFind && con.fromEdge1 == fromEdge) {
+                    if(con.side1 == sideToFind && con.fromEdge1 == fromEdge && con.trackType == trackType) {
                         return true;
                     }
-                    if(con.side2 == sideToFind  && con.fromEdge2 == fromEdge) {
+                    if(con.side2 == sideToFind  && con.fromEdge2 == fromEdge && con.trackType == trackType) {
                         return true;
                     }
                 }
@@ -293,9 +314,10 @@ var GameModel = function(gameData) {
     };
     // get the neightbour of the supplied tile, in the direction specified by 'side'
     self.GetNeighborTile = function(tile, side) {
+        //console.log("getting neighbor tile on side " + side + " where tile is " + tile.x + "," + tile.y);
         if(side == "top" && tile.y > 0) {
             return self.GetTileAtCoordinates(tile.x,tile.y-1);
-        } else if(side == "bottom" && tile.y < self.gameData.tileCountInHeight) {
+        } else if(side == "bottom" && tile.y < self.gameData.tileCountInHeight - 1) {
             return self.GetTileAtCoordinates(tile.x,tile.y+1);
         } else if(side =="left" && tile.x > 0) {
             return self.GetTileAtCoordinates(tile.x-1,tile.y);
@@ -318,68 +340,4 @@ var GameModel = function(gameData) {
     }
 }
 
-var GameController = function() {
-    var self = this;
 
-    self.currentLevel = 0;
-    self.gameData = gameData;
-    self.gameModel = new GameModel(gameData[self.currentLevel]);
-
-    self.DisplayLevelInfo = function() {
-        console.log("updating level info")
-        var title = self.gameModel.gameData.level + ": " + self.gameModel.gameData.title;
-        console.log(title);
-        $(".title").html(title);
-        if(self.IsANextLevel()) {
-            $(".next-level-trigger").addClass("clickable");
-        } else {
-            $(".next-level-trigger").removeClass("clickable");
-        }
-        if(self.IsAPreviousLevel()) {
-            $(".previous-level-trigger").addClass("clickable");
-        } else {
-            $(".previous-level-trigger").removeClass("clickable");
-        }
-    };
-    self.LoadCurrentLevel = function() {
-        //self.gameModel = new GameModel(gameData[self.currentLevel]);
-        self.gameModel.SetupBoard(self.gameData[self.currentLevel]);
-        self.DisplayLevelInfo();
-    }
-    self.GotoSpecificLevel = function(level) {
-        self.currentLevel = level;
-        self.LoadCurrentLevel();
-    }
-    self.GotoNextLevel = function() {
-        console.log("going to next level")
-        if(self.IsANextLevel()) {
-            self.currentLevel++;
-            self.LoadCurrentLevel();
-        }
-    }
-    self.GotoPreviousLevel = function() {
-        console.log("going to previous level")
-        if(self.IsAPreviousLevel()) {
-            self.currentLevel--;
-            self.LoadCurrentLevel();
-        }
-    }
-    self.IsANextLevel = function() {
-        return (self.currentLevel < self.gameData.length -1);
-    }
-    self.IsAPreviousLevel = function() {
-        return (self.currentLevel > 0);
-    }
-
-    self.Initialize = function() {
-        self.LoadCurrentLevel();
-    }
-    self.Initialize();
-
-    $(document).ready(function() {
-        $(".next-level-trigger").on("click", self.GotoNextLevel);
-        $(".previous-level-trigger").on("click", self.GotoPreviousLevel);
-    });
-}
-
-GameController();
