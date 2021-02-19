@@ -4,7 +4,20 @@ var GameController = function() {
 
     self.currentLevel = 0;
     self.gameData = gameData;
-    self.gameModel = new GameModel(gameData[self.currentLevel]);
+
+    self.LevelCompleteCallback = function() {
+        console.log("nice.")
+        self.ShowLevelCompletePopup();
+    };
+
+    self.gameModel = new GameModel(gameData[self.currentLevel], self.LevelCompleteCallback);
+
+    self.CloseLevelCompletePopup = function() {
+        $("#level-completion-popup").hide();
+    };
+    self.ShowLevelCompletePopup = function() {
+        $("#level-completion-popup").show();
+    };
 
     self.DisplayLevelInfo = function() {
         console.log("updating level info")
@@ -23,6 +36,8 @@ var GameController = function() {
         }
     };
     self.LoadCurrentLevel = function() {
+        // if they just completed a level the popup might be open, so close it
+        self.CloseLevelCompletePopup();
         //self.gameModel = new GameModel(gameData[self.currentLevel]);
         self.gameModel.SetupBoard(self.gameData[self.currentLevel]);
         self.DisplayLevelInfo();
@@ -60,5 +75,6 @@ var GameController = function() {
     $(document).ready(function() {
         $(".next-level-trigger").on("click", self.GotoNextLevel);
         $(".previous-level-trigger").on("click", self.GotoPreviousLevel);
+        $(".close-popup-trigger").on("click", self.CloseLevelCompletePopup);
     });
 }

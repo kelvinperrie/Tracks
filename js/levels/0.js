@@ -1,6 +1,6 @@
 var level0 = {
     level: 0,
-    title : "Multitrack drift",
+    title : "Testing 'done' popup",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
     tiles : [
@@ -10,7 +10,7 @@ var level0 = {
             id: 1,
             connections: [
                 { 
-                    side1: "left",
+                    side1: "right",
                     fromEdge1: 50,
                     side2: "bottom",
                     fromEdge2: 50
@@ -23,22 +23,7 @@ var level0 = {
             id: 2,
             connections: [
                 { 
-                    trackType: 2,
                     side1: "bottom",
-                    fromEdge1: 50,
-                    side2: "right",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 1,
-            id: 3,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "right",
                     fromEdge1: 50,
                     side2: "left",
                     fromEdge2: 50
@@ -47,6 +32,19 @@ var level0 = {
         },
         {
             x: 1,
+            y: 2,
+            id: 3,
+            connections: [
+                { 
+                    side1: "top",
+                    fromEdge1: 50,
+                    side2: "left",
+                    fromEdge2: 50
+                }
+            ]
+        },
+        {
+            x: 2,
             y: 2,
             id: 4,
             connections: [
@@ -54,155 +52,6 @@ var level0 = {
                     side1: "top",
                     fromEdge1: 50,
                     side2: "right",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 2,
-            y: 2,
-            id: 5,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 2,
-            id: 6,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "bottom",
-                    fromEdge1: 50,
-                    side2: "top",
-                    fromEdge2: 50
-                },
-                { 
-                    side1: "right",
-                    fromEdge1: 50,
-                    side2: "left",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 4,
-            y: 2,
-            id: 7,
-            connections: [
-                { 
-                    side1: "left",
-                    fromEdge1: 50,
-                    side2: "right",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 1,
-            y: 3,
-            id: 8,
-            connections: [
-                { 
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 2,
-            y: 3,
-            id: 9,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "right",
-                    fromEdge1: 50,
-                    side2: "top",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 3,
-            id: 10,
-            isMoveable: false,
-            connections: [
-                { 
-                    side1: "left",
-                    fromEdge1: 50,
-                    side2: "top",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 4,
-            y: 3,
-            id: 11,
-            connections: [
-                { 
-                    side1: "right",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 2,
-            y: 4,
-            id: 12,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "left",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 3,
-            y: 4,
-            id: 13,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "right",
-                    fromEdge1: 50,
-                    side2: "left",
-                    fromEdge2: 50
-                },
-                { 
-                    side1: "top",
-                    fromEdge1: 50,
-                    side2: "bottom",
-                    fromEdge2: 50
-                }
-            ]
-        },
-        {
-            x: 4,
-            y: 4,
-            id: 14,
-            connections: [
-                { 
-                    trackType: 2,
-                    side1: "bottom",
-                    fromEdge1: 50,
-                    side2: "left",
                     fromEdge2: 50
                 }
             ]

@@ -59,3 +59,31 @@ canvas {
     width: 600px;
     text-align: center;
 }
+
+#level-completion-popup{
+    display: none;
+    margin: auto;
+    width: 300px;
+    border-radius: 20px;
+    position: absolute;
+    border: 10px solid #331133;
+    left:0;
+    right:0;
+    z-index: 100;
+    top: 150px;
+    background-color: #DD6655;
+}
+.close-popup{
+    float: right;
+    font-size: 1.5em;
+    margin-top: -.25em;
+    margin-right: .25em;
+}
+.level-complete-text {
+    font-size: 40px;
+    padding: .75em 1em 0.25em 1em;
+}
+.next-level-on-popup{
+    text-align: right;
+    margin: .25em;
+}

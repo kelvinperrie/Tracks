@@ -1,7 +1,7 @@
 
 
 
-var GameModel = function(gameData) {
+var GameModel = function(gameData, levelCompleteCallback) {
     var self = this;
 
     self.board;
@@ -16,6 +16,7 @@ var GameModel = function(gameData) {
         track2: "#FFF",
         selection: "#FFFFFF"
     }
+    self.levelCompleteCallback = levelCompleteCallback;
     self.trains = [];
 
     self.selectedTile = null;
@@ -228,7 +229,7 @@ var GameModel = function(gameData) {
     };
     
     self.NotifyLevelComplete = function() {
-
+        levelCompleteCallback();
     };
 
     self.SwapTiles = function(tile1, tile2) {
