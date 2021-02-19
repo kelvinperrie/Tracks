@@ -134,12 +134,8 @@ var GameModel = function(gameData) {
                                 var end =   self.GetCoordinatesForConnection(xpos,ypos,tile.connections[c].side2,tile.connections[c].fromEdge2);
                                 self.ctx.save();
                                 self.ctx.beginPath();
-                                // todo fix me
-                                if(tile.connections[c].trackType == 1) {
-                                    self.ctx.strokeStyle = self.colours.track1;
-                                } else {
-                                    self.ctx.strokeStyle = self.colours.track2;
-                                }
+                                // colour the track based on the type it is
+                                self.ctx.strokeStyle = self.colours['track'+tile.connections[c].trackType];
                                 self.ctx.moveTo(start.x, start.y);
                                 self.ctx.lineWidth = "2";
                                 if(self.IsConnectionACurve(tile.connections[c])) {
