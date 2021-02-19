@@ -16,7 +16,8 @@ var GameController = function() {
         $("#level-completion-popup").hide();
     };
     self.ShowLevelCompletePopup = function() {
-        $("#level-completion-popup").show();
+        // give us a bit of a pause before slaming that popup in our face
+        setTimeout(function() { $("#level-completion-popup").show(); } , 500);
     };
 
     self.DisplayLevelInfo = function() {
