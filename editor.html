@@ -72,7 +72,9 @@
     <script type="text/javascript" src="js/tracks-game.js"></script>
     <script type="text/javascript">
         var editorActive = true;
-        GameController();
+        var gameController = new GameControllerModel();
+        
+        var editor = new EditorModel(gameController);
     </script>
 </body>
 

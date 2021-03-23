@@ -1,5 +1,5 @@
 
-var GameController = function() {
+var GameControllerModel = function() {
     var self = this;
 
     self.currentLevel = 0;

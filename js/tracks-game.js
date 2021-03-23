@@ -210,7 +210,7 @@ var GameModel = function(gameData, levelCompleteCallback) {
         var clickedTile = self.GetTileAtPixels(clickX, clickY);
         if(clickedTile && clickedTile.id) {
             // have they clicked one that is not movable? do nothing ... well, clear the selected I guess?
-            if(!clickedTile.isMoveable) {
+            if(!clickedTile.isMoveable && !this.IsEditorActive()) {
                 self.ClearSelectedTile();
                 return;
             }
@@ -256,11 +256,14 @@ var GameModel = function(gameData, levelCompleteCallback) {
         
         var t1id = tile1.id;
         var t1con = tile1.connections;
+        var t1move = tile1.isMoveable;
 
         self.board[tile1.y][tile1.x].id = tile2.id;
         self.board[tile1.y][tile1.x].connections = tile2.connections;
+        self.board[tile1.y][tile1.x].isMoveable = tile2.isMoveable;
         self.board[tile2.y][tile2.x].id = t1id;
         self.board[tile2.y][tile2.x].connections = t1con;
+        self.board[tile2.y][tile2.x].isMoveable = t1move;
 
     };
     // returns whatever tile the user has clicked on (if any)
