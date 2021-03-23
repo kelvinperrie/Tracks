@@ -24,6 +24,11 @@ var GameModel = function(gameData, levelCompleteCallback) {
     self.canvas = document.getElementById('canvas');
     self.ctx = self.canvas.getContext('2d');
 
+    self.IsEditorActive = function() {
+        // maybe put this somewhere other than a global or something
+        return editorActive;
+    };
+
     self.SetupBoard = function(gameData) {
         self.gameData = gameData;
         
@@ -106,14 +111,16 @@ var GameModel = function(gameData, levelCompleteCallback) {
     // this draws the game tiles
     self.DrawLoop = function() {
         self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
-
         if(self.board) {
 
             // draw each tile
             for(var y = 0; y < self.board.length; y++) {
                 for(var x = 0; x < self.gameData.tileCountInWidth; x++) {
                     var tile = self.board[y][x];
+                    //console.log(tile)
+
                     if(tile && tile.id) {
+                        
                         var xpos = x * self.tileWidth;
                         var ypos = y * self.tileHeight;
                         self.ctx.save();
@@ -127,6 +134,17 @@ var GameModel = function(gameData, levelCompleteCallback) {
                             self.ctx.font = '20px serif';
                             self.ctx.fillStyle = self.colours.selection;
                             self.ctx.fillText(tile.id, xpos, ypos + 20);
+                        }
+                        // draw a guide around each square if the editor is active
+                        //console.log("wow, editor is " + self.IsEditorActive());
+                        if(self.IsEditorActive()) {
+                            self.ctx.save();
+                            self.ctx.strokeStyle = "#fff";
+                            self.ctx.lineWidth = "1";
+                            self.ctx.beginPath();
+                            self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
+                            self.ctx.stroke();
+                            self.ctx.restore();
                         }
                         // draw any connections on this tile
                         if(tile.connections) {
@@ -221,6 +239,8 @@ var GameModel = function(gameData, levelCompleteCallback) {
 
     // checks to see if the game is complete
     self.CheckForCompletion = function() {
+        // if we're in the editor then do nothing
+        if(self.IsEditorActive()) return;
         var noMatches = self.CheckAllConnectionsHaveMatches();
         console.log(noMatches);
         if(noMatches.length == 0) {

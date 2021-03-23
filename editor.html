@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en-nz">
+
+<head>
+    <title>Choo choo</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/tracks.css">
+    <link rel="stylesheet" type="text/css" href="css/editor.css">
+</head>
+
+<body>
+
+    <div class="content">
+        <div class="header">
+            <div class="title"></div>
+            <div class="menu-bar">
+                <div class="clickable previous-level-trigger previous-menu menu-item">previous</div>
+                
+                <div class="clickable next-level-trigger next-menu menu-item">next</div>
+            </div>
+        </div>
+        <canvas id="canvas" width="600" height="600"></canvas>
+        <div id="level-completion-popup">
+            <div class="clickable close-popup close-popup-trigger">x</div>
+            <div class="level-complete-text">Done!</div>
+            <div class="clickable next-level-trigger next-level-on-popup">go to next level!</div>
+        </div>
+        <div id="editor-ui">
+            <div>
+                <span class="editor-text-control set-moveable-trigger">set as moveable</span>
+                <span class="editor-text-control set-not-moveable-trigger">set as NOT moveable</span>
+            </div>
+            <br/>
+            <div>Add connection to selected</div>
+            <div>
+                Track type 
+                <select id="track-type">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                  </select>
+            </div>
+            <div>
+                <div class="add-connection" data-c1="bottom" data-c2="left"><img src="images/editor/bottom-left.png"/></div>
+                <div class="add-connection" data-c1="bottom" data-c2="right"><img src="images/editor/bottom-right.png"/></div>
+                <div class="add-connection" data-c1="top" data-c2="left"><img src="images/editor/top-left.png"/></div>
+                <div class="add-connection" data-c1="top" data-c2="right"><img src="images/editor/top-right.png"/></div>
+                <div class="add-connection" data-c1="left" data-c2="right"><img src="images/editor/left-right.png"/></div>
+                <div class="add-connection" data-c1="top" data-c2="bottom"><img src="images/editor/top-bottom.png"/></div>
+            </div>
+            
+            <br/>
+            <div class="editor-text-control clear-connection-trigger">Clear ALL connections from selected</div>
+            <br/>
+            <div class="editor-text-control output-json-trigger">Show configuration</div>
+            <div>
+                <textarea id="output-json"></textarea>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/polyfills.js"></script>
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/tracks-editor.js"></script>
+    <script type="text/javascript" src="js/tracks-controller.js"></script>
+    <script type="text/javascript" src="js/tracks-train.js"></script>
+    <script type="text/javascript" src="js/tracks-game.js"></script>
+    <script type="text/javascript">
+        var editorActive = true;
+        GameController();
+    </script>
+</body>
+
+</html>
