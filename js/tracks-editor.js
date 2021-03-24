@@ -1,12 +1,8 @@
 
-// gonna make some assumptions about accessing the controller in this ...
-
 
 var EditorModel = function(gameController) {
     var self = this;
 
-    console.log("here comes gamecontr");
-    console.log(gameController);
     self.gameController = gameController;
 
     self.HandleOutputJsonClick = function() {
@@ -55,13 +51,13 @@ var EditorModel = function(gameController) {
     });
 };
 
-
+// set up some dummy gamedata
 var gameData = [
     {
         level: 0,
         title : "Editor",
         tileCountInWidth : 6,
-        tileCountInHeight : 5,
+        tileCountInHeight : 6,
         tiles : []
     }
 ];

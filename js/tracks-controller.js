@@ -1,8 +1,9 @@
 
-var GameControllerModel = function() {
+var GameControllerModel = function(settings) {
     var self = this;
 
     self.currentLevel = 0;
+    self.settings = settings;
     self.gameData = gameData;
 
     self.LevelCompleteCallback = function() {
@@ -10,7 +11,7 @@ var GameControllerModel = function() {
         self.ShowLevelCompletePopup();
     };
 
-    self.gameModel = new GameModel(gameData[self.currentLevel], self.LevelCompleteCallback);
+    self.gameModel = new GameModel(gameData[self.currentLevel], self.settings, self.LevelCompleteCallback);
 
     self.CloseLevelCompletePopup = function() {
         $("#level-completion-popup").hide();

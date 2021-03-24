@@ -71,8 +71,12 @@
     <script type="text/javascript" src="js/tracks-train.js"></script>
     <script type="text/javascript" src="js/tracks-game.js"></script>
     <script type="text/javascript">
-        var editorActive = true;
-        var gameController = new GameControllerModel();
+
+        var settings = {
+            showIds: true,
+            editorActive: true
+        }
+        var gameController = new GameControllerModel(settings);
         
         var editor = new EditorModel(gameController);
     </script>

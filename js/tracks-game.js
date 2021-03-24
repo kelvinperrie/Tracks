@@ -1,14 +1,14 @@
 
 
 
-var GameModel = function(gameData, levelCompleteCallback) {
+var GameModel = function(gameData, settings, levelCompleteCallback) {
     var self = this;
 
     self.board;
     self.gameData = gameData;
     self.tileHeight = 100;
     self.tileWidth = 100;
-    self.showIds = true;
+    self.showIds = settings.showIds;
     self.colours = {
         default: "#552255",
         moveable: "#993366",
@@ -25,8 +25,7 @@ var GameModel = function(gameData, levelCompleteCallback) {
     self.ctx = self.canvas.getContext('2d');
 
     self.IsEditorActive = function() {
-        // maybe put this somewhere other than a global or something
-        return editorActive;
+        return settings.editorActive;
     };
 
     self.SetupBoard = function(gameData) {
