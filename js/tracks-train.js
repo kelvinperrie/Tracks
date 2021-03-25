@@ -9,6 +9,10 @@ var TrainModel = function(game, tile, connection, origin, target) {
     self.originOnTile = origin;
     self.targetOnTile = target;
 
+    console.log(self.currentTile);
+    console.log(self.currentConnection);
+    console.log(self.originOnTile);
+    console.log(self.targetOnTile);
 
     self.GetCoordinatesForConnectionPoint = function(connection) {
         var x = self.currentTile.x * self.game.tileWidth;
@@ -31,7 +35,9 @@ var TrainModel = function(game, tile, connection, origin, target) {
     self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
     self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
 
+    console.log("self.currentCoordinates")
     console.log(self.currentCoordinates)
+    console.log("self.targetCoordinates")
     console.log(self.targetCoordinates)
 
     self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
@@ -49,16 +55,16 @@ var TrainModel = function(game, tile, connection, origin, target) {
     };
 
     self.MoveDistance = function(distance) {
-        var adjacent = Math.cos(self.theta ) * distance;
+        var adjacent = Math.cos(self.theta_radians ) * distance;
         console.log("adjacent is " + adjacent)
         // what is the opposite (Y)
-        var opposite = Math.sin(self.theta ) * distance;
+        var opposite = Math.sin(self.theta_radians ) * distance;
         console.log("opposite is " + opposite)
 
         console.log("old coordinates are: " + self.currentCoordinates.x + "," + self.currentCoordinates.y)
 
-        self.currentCoordinates.x = self.currentCoordinates.x - opposite;
-        self.currentCoordinates.y = self.currentCoordinates.y - adjacent;
+        self.currentCoordinates.x = self.currentCoordinates.x + adjacent;
+        self.currentCoordinates.y = self.currentCoordinates.y + opposite;
 
         console.log("new coordinates are: " + self.currentCoordinates.x + "," + self.currentCoordinates.y)
     }
@@ -70,7 +76,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
         self.originOnTile = oldTarget;
         self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
         self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
-        self.theta = getAngle(self.currentCoordinates.x, self.targetCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.y);
+        self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
         self.theta_radians =  self.theta * (Math.PI/180);
     };
 

@@ -61,8 +61,9 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
             self.board[newTile.y][newTile.x] = newTile;
         }
 
-        //var train = new TrainModel(self, gameData.tiles[1], gameData.tiles[1].connections[0], { side: gameData.tiles[1].connections[0].side1, fromEdge: gameData.tiles[1].connections[0].fromEdge1 }, { side: gameData.tiles[1].connections[0].side2, fromEdge: gameData.tiles[1].connections[0].fromEdge2 })
-        //self.trains.push(train);
+        self.trains = [];
+        var train = new TrainModel(self, gameData.tiles[0], gameData.tiles[0].connections[0], { side: gameData.tiles[0].connections[0].side1, fromEdge: gameData.tiles[0].connections[0].fromEdge1 }, { side: gameData.tiles[0].connections[0].side2, fromEdge: gameData.tiles[0].connections[0].fromEdge2 })
+        self.trains.push(train);
 
     };
     //self.SetupBoard(self.gameData);
