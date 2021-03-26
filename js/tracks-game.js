@@ -61,9 +61,11 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
             self.board[newTile.y][newTile.x] = newTile;
         }
 
-        //self.trains = [];
+        // todo, where you gunna put these
+        self.trains = [];
         //var train = new TrainModel(self, gameData.tiles[0], gameData.tiles[0].connections[0], { side: gameData.tiles[0].connections[0].side1, fromEdge: gameData.tiles[0].connections[0].fromEdge1 }, { side: gameData.tiles[0].connections[0].side2, fromEdge: gameData.tiles[0].connections[0].fromEdge2 })
-        //self.trains.push(train);
+        var train = new TrainModel(self, gameData.tiles[0]);
+        self.trains.push(train);
 
     };
     //self.SetupBoard(self.gameData);
@@ -254,6 +256,8 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
 
     self.SwapTiles = function(tile1, tile2) {
         
+        self.NotifyTrainsOfSwap(tile1, tile2);
+
         var t1id = tile1.id;
         var t1con = tile1.connections;
         var t1move = tile1.isMoveable;
@@ -266,6 +270,12 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         self.board[tile2.y][tile2.x].isMoveable = t1move;
 
     };
+    self.NotifyTrainsOfSwap = function(tile1, tile2) {
+        for(var t = 0; t < self.trains.length; t++) {
+            self.trains[t].DealWithTileSwap(tile1, tile2)
+        }
+    };
+
     // returns whatever tile the user has clicked on (if any)
     self.GetTileAtPixels = function(clickX, clickY) {
         var x = Math.floor(clickX / self.tileWidth);
@@ -311,7 +321,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         }
         return noMatches;
     };
-    // check a single tile to see if the connections it has have matches
+    // check a single connection to see if it has a match
     self.CheckForConnectionMatch = function(tile, side, fromEdge, trackType) {
         var neighborTile = self.GetNeighborTile(tile, side);
         
@@ -332,7 +342,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         }
         return false;
     };
-    // get the neightbour of the supplied tile, in the direction specified by 'side'
+    // get the neighbour of the supplied tile, in the direction specified by 'side'
     self.GetNeighborTile = function(tile, side) {
         //console.log("getting neighbor tile on side " + side + " where tile is " + tile.x + "," + tile.y);
         if(side == "top" && tile.y > 0) {

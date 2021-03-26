@@ -25,7 +25,7 @@ var level1 = {
                 { 
                     side1: "top",
                     fromEdge1: 50,
-                    side2: "right",
+                    side2: "bottom",
                     fromEdge2: 50
                 }
             ]

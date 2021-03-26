@@ -5,14 +5,16 @@ var TrainModel = function(game, tile, connection, origin, target) {
 
     self.game = game;
     self.currentTile = tile;
-    self.currentConnection = connection;
-    self.originOnTile = origin;
-    self.targetOnTile = target;
-
-    console.log(self.currentTile);
-    console.log(self.currentConnection);
-    console.log(self.originOnTile);
-    console.log(self.targetOnTile);
+    if(connection) {
+        self.currentConnection = connection;
+        self.originOnTile = origin;
+        self.targetOnTile = target;
+    } else {
+        // no connection passed in so just use the first one on the tile
+        self.currentConnection = tile.connections[0];
+        self.originOnTile = { side: tile.connections[0].side1, fromEdge: tile.connections[0].fromEdge1 };
+        self.targetOnTile = { side: tile.connections[0].side2, fromEdge: tile.connections[0].fromEdge2 };
+    }
 
     self.GetCoordinatesForConnectionPoint = function(connection) {
         var x = self.currentTile.x * self.game.tileWidth;
@@ -30,9 +32,8 @@ var TrainModel = function(game, tile, connection, origin, target) {
         return { x, y }
     };
 
-    console.log(self.originOnTile)
-    console.log(self.targetOnTile)
     self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
+    self.currentCoordinatesRelative = { x:0, y:0};
     self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
 
     console.log("self.currentCoordinates")
@@ -47,6 +48,29 @@ var TrainModel = function(game, tile, connection, origin, target) {
         
     };
 
+    self.DealWithTileSwap = function(tile1, tile2) {
+        var xOffSet = self.currentCoordinates.x - (self.currentTile.x * self.game.tileWidth);
+        var yOffSet = self.currentCoordinates.y - (self.currentTile.y * self.game.tileHeight);
+        console.log("OFFSET IS x: " + xOffSet +", y: " + yOffSet);
+
+        if(tile1.id == self.currentTile.id) {
+            console.log("train is on swapped tile 1!")
+            self.currentTile = tile2;
+            self.currentCoordinates.x = (self.currentTile.x * self.game.tileWidth) + xOffSet;
+            self.currentCoordinates.y = (self.currentTile.y * self.game.tileHeight) + yOffSet;
+                    
+            self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
+        }
+        if(tile2.id == self.currentTile.id) {
+            console.log("train is on swapped tile 2!")
+            self.currentTile = tile1;
+            self.currentCoordinates.x = (self.currentTile.x * self.game.tileWidth) + xOffSet;
+            self.currentCoordinates.y = (self.currentTile.y * self.game.tileHeight) + yOffSet;
+                    
+            self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
+        }
+    };
+
     self.DistanceToTarget = function() {
         var deltaX = self.currentCoordinates.x - self.targetCoordinates.x;
         var deltaY = self.currentCoordinates.y - self.targetCoordinates.y;
@@ -56,17 +80,19 @@ var TrainModel = function(game, tile, connection, origin, target) {
 
     self.MoveDistance = function(distance) {
         var adjacent = Math.cos(self.theta_radians ) * distance;
-        console.log("adjacent is " + adjacent)
+        //console.log("adjacent is " + adjacent)
         // what is the opposite (Y)
         var opposite = Math.sin(self.theta_radians ) * distance;
-        console.log("opposite is " + opposite)
+        //console.log("opposite is " + opposite)
 
-        console.log("old coordinates are: " + self.currentCoordinates.x + "," + self.currentCoordinates.y)
+        //console.log("old coordinates are: " + self.currentCoordinates.x + "," + self.currentCoordinates.y)
 
         self.currentCoordinates.x = self.currentCoordinates.x + adjacent;
         self.currentCoordinates.y = self.currentCoordinates.y + opposite;
+        self.currentCoordinatesRelative.x = self.currentCoordinatesRelative.x + adjacent;
+        self.currentCoordinatesRelative.y = self.currentCoordinatesRelative.y + adjacent;
 
-        console.log("new coordinates are: " + self.currentCoordinates.x + "," + self.currentCoordinates.y)
+        //console.log("new coordinates are: " + self.currentCoordinates.x + "," + self.currentCoordinates.y)
     }
 
     self.TurnAround = function() {
@@ -80,21 +106,86 @@ var TrainModel = function(game, tile, connection, origin, target) {
         self.theta_radians =  self.theta * (Math.PI/180);
     };
 
+    self.GetTileToMoveTo = function() {
+        if(self.game.CheckForConnectionMatch(self.currentTile, self.targetOnTile.side, self.targetOnTile.fromEdge, self.currentConnection.trackType)) {
+            console.log("has a connection");
+            var neighbour = self.game.GetNeighborTile(self.currentTile,self.targetOnTile.side)
+            return neighbour;
+        }
+        return null;
+    };
+
+    self.MoveToNewTile = function() {
+        console.log("in movetonewtile")
+        var moveToTile = self.GetTileToMoveTo();
+        if(moveToTile != null) {
+
+
+            self.currentTile = moveToTile;
+            // find the connection
+            var sideToFind = self.game.WhatIsOppositeSide(self.targetOnTile.side);
+            var fromEdge = self.targetOnTile.fromEdge;
+            var trackType = self.currentConnection.trackType;
+            console.log("SIDE TO FIND: " + sideToFind + " ; FROM EDGE: " + fromEdge + " ; TRACK TYPE: " + trackType)
+            for(var con = 0; con < moveToTile.connections.length; con++) {
+                var connect = moveToTile.connections[con];
+                if(connect.side1 == sideToFind && connect.fromEdge1 == fromEdge && connect.trackType == trackType) {
+                    self.currentConnection = connect;
+                    self.originOnTile = { side: connect.side1, fromEdge: connect.fromEdge1 };
+                    self.targetOnTile = { side: connect.side2, fromEdge: connect.fromEdge2 };   
+                    self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
+                    self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
+                    self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
+                    self.theta_radians = self.theta * (Math.PI/180);                        
+                    return true;
+                }
+                if(connect.side2 == sideToFind  && connect.fromEdge2 == fromEdge && connect.trackType == trackType) {
+                    self.currentConnection = connect;
+                    self.originOnTile = { side: connect.side2, fromEdge: connect.fromEdge2 };
+                    self.targetOnTile = { side: connect.side1, fromEdge: connect.fromEdge1 };  
+                    self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
+                    self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
+                    self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
+                    self.theta_radians = self.theta * (Math.PI/180);
+                    return true;
+                }
+            }
+            // we shouldn't get here!
+            console.log("we found a neighbouring tile with a match but then couldn't move to it???????");
+        }
+        return false;
+    }
+
     self.Move = function() {
         var distance = 5;
 
         var distanceToTarget = self.DistanceToTarget();
-        console.log("distanceToTarget: " + distanceToTarget)
-        console.log("self.theta: " + self.theta)
-        console.log("self.theta_radians: " + self.theta_radians)
+        //console.log("distanceToTarget: " + distanceToTarget)
+        //console.log("self.theta: " + self.theta)
+        //console.log("self.theta_radians: " + self.theta_radians)
         if(distanceToTarget == 0) {
-            self.TurnAround();
+            console.log("DISTANCE TO TARGET IS ZERRRRRRRRRRRRRRRRRROOOO")
+            if(self.MoveToNewTile()) {
+                console.log("IN THEORY WE'RE ON THE NEW TILE?")
+                console.log("origin")
+                console.log(self.originOnTile);
+                console.log("target")
+                console.log(self.targetOnTile);
+            } else {
+                console.log("WE TURNIN AROUND")
+                self.TurnAround();
+            }
             self.MoveDistance(distance);
         } else  if(distanceToTarget < distance) {
-            // if turning around
-            var distanceInOtherDirection = distance - distanceToTarget;
-            self.TurnAround();
-            self.MoveDistance(distanceInOtherDirection);
+            if(self.MoveToNewTile()) {
+                console.log("IN THEORY WE'RE ON THE NEW TILE?")
+            } else {
+                console.log("WE TURNIN AROUND")
+                var distanceInOtherDirection = distance - distanceToTarget;
+                self.TurnAround();
+                self.MoveDistance(distanceInOtherDirection);
+            }
+
         } else {
             self.MoveDistance(distance);
         }
