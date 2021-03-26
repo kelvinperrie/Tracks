@@ -73,7 +73,7 @@ var level1 = {
             x: 3,
             y: 3,
             id: 6,
-            isMoveable: false,
+            isMoveable: true,
             connections: [
                 { 
                     side1: "top",
@@ -102,9 +102,9 @@ var level1 = {
             id: 8,
             connections: [
                 { 
-                    side1: "right",
+                    side1: "left",
                     fromEdge1: 50,
-                    side2: "left",
+                    side2: "right",
                     fromEdge2: 50
                 }
             ]

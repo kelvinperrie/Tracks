@@ -23,6 +23,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
             y += connection.fromEdge;
         } else if(connection.side == "right") {
             y += connection.fromEdge;
+            x += self.game.tileWidth;
         } else if(connection.side == "top") {
             x += connection.fromEdge;
         } else if(connection.side == "bottom") {
@@ -36,8 +37,12 @@ var TrainModel = function(game, tile, connection, origin, target) {
     self.currentCoordinatesRelative = { x:0, y:0};
     self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
 
+    console.log("self.originOnTile")
+    console.log(self.originOnTile)
     console.log("self.currentCoordinates")
     console.log(self.currentCoordinates)
+    console.log("self.targetOnTile")
+    console.log(self.targetOnTile)
     console.log("self.targetCoordinates")
     console.log(self.targetCoordinates)
 
@@ -53,6 +58,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
         var yOffSet = self.currentCoordinates.y - (self.currentTile.y * self.game.tileHeight);
         console.log("OFFSET IS x: " + xOffSet +", y: " + yOffSet);
 
+        console.log("tile1.id: " + tile1.id + "; tile2.id: " + tile2.id + "; self.currentTile.id: " + self.currentTile.id);
         if(tile1.id == self.currentTile.id) {
             console.log("train is on swapped tile 1!")
             self.currentTile = tile2;
@@ -60,8 +66,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
             self.currentCoordinates.y = (self.currentTile.y * self.game.tileHeight) + yOffSet;
                     
             self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
-        }
-        if(tile2.id == self.currentTile.id) {
+        } else if(tile2.id == self.currentTile.id) {
             console.log("train is on swapped tile 2!")
             self.currentTile = tile1;
             self.currentCoordinates.x = (self.currentTile.x * self.game.tileWidth) + xOffSet;
@@ -136,7 +141,9 @@ var TrainModel = function(game, tile, connection, origin, target) {
                     self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
                     self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
                     self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
-                    self.theta_radians = self.theta * (Math.PI/180);                        
+                    console.log("new angle is " + self.theta)
+                    self.theta_radians = self.theta * (Math.PI/180);     
+                    console.log("new theta_radians is " + self.theta_radians)                   
                     return true;
                 }
                 if(connect.side2 == sideToFind  && connect.fromEdge2 == fromEdge && connect.trackType == trackType) {
@@ -146,7 +153,9 @@ var TrainModel = function(game, tile, connection, origin, target) {
                     self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
                     self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
                     self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
+                    console.log("new angle is " + self.theta)
                     self.theta_radians = self.theta * (Math.PI/180);
+                    console.log("new theta_radians is " + self.theta_radians)
                     return true;
                 }
             }
@@ -160,7 +169,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
         var distance = 5;
 
         var distanceToTarget = self.DistanceToTarget();
-        //console.log("distanceToTarget: " + distanceToTarget)
+        console.log("distanceToTarget: " + distanceToTarget)
         //console.log("self.theta: " + self.theta)
         //console.log("self.theta_radians: " + self.theta_radians)
         if(distanceToTarget == 0) {
