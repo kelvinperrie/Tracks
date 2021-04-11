@@ -16,18 +16,18 @@ var TrainModel = function(game, tile, connection, origin, target) {
         self.targetOnTile = { side: tile.connections[0].side2, fromEdge: tile.connections[0].fromEdge2 };
     }
 
-    self.GetCoordinatesForConnectionPoint = function(connection) {
+    self.GetCoordinatesForConnectionPoint = function(connectionPoint) {
         var x = self.currentTile.x * self.game.tileWidth;
         var y = self.currentTile.y * self.game.tileHeight;
-        if(connection.side == "left") {
-            y += connection.fromEdge;
-        } else if(connection.side == "right") {
-            y += connection.fromEdge;
+        if(connectionPoint.side == "left") {
+            y += connectionPoint.fromEdge;
+        } else if(connectionPoint.side == "right") {
+            y += connectionPoint.fromEdge;
             x += self.game.tileWidth;
-        } else if(connection.side == "top") {
-            x += connection.fromEdge;
-        } else if(connection.side == "bottom") {
-            x += connection.fromEdge;
+        } else if(connectionPoint.side == "top") {
+            x += connectionPoint.fromEdge;
+        } else if(connectionPoint.side == "bottom") {
+            x += connectionPoint.fromEdge;
             y += self.game.tileHeight;
         }
         return { x, y }
@@ -48,6 +48,14 @@ var TrainModel = function(game, tile, connection, origin, target) {
 
     self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
     self.theta_radians = self.theta * (Math.PI/180);
+
+    // these are used for movement on a curved connection
+    self.currentlyOnCurve = false;
+    self.currentCurveCenterCoordinates = null;
+    self.currentCurveAngle = 0;
+    self.direction = "clockwise";
+    self.angleToOrigin = 0;
+    self.angleToTarget = 0;
 
     self.Create = function() {
         
@@ -120,6 +128,74 @@ var TrainModel = function(game, tile, connection, origin, target) {
         return null;
     };
 
+    self.GetCurveCenterCoordinates = function(connection) {
+        // this will screw up if fromEdge is ever not 50
+        var x = self.currentTile.x * self.game.tileWidth;
+        var y = self.currentTile.y * self.game.tileHeight;
+        if(connection.side1 == "left" || connection.side2 == "left") {
+
+        } else if(connection.side1 == "right" || connection.side2 == "right") {
+            x += self.game.tileWidth;
+        }
+        if(connection.side1 == "top" || connection.side2 == "top") {
+
+        } else if(connection.side1 == "bottom" || connection.side2 == "bottom") {
+            y += self.game.tileHeight;
+        }
+        return { x, y }
+    };
+
+    // if we've just moved to a curving tile then initialise the various stupid variables
+    self.SetupMovedToTileCurveDetails = function() {
+        var isCurve = self.game.IsConnectionACurve(self.currentConnection);
+        if(isCurve) {
+            self.currentlyOnCurve = true;
+            self.currentCurveCenterCoordinates = self.GetCurveCenterCoordinates(self.currentConnection);
+            self.currentCurveAngle = 0;
+
+            self.angleToOrigin = angle(self.currentCurveCenterCoordinates.x,self.currentCurveCenterCoordinates.y,self.currentCoordinates.x,self.currentCoordinates.y);
+            self.angleToTarget = angle(self.currentCurveCenterCoordinates.x,self.currentCurveCenterCoordinates.y,self.targetCoordinates.x, self.targetCoordinates.y);
+            
+//var what = angle(self.currentCurveCenterCoordinates.x,self.currentCurveCenterCoordinates.y,self.currentCoordinates.x,self.currentCoordinates.y);
+
+// console.log("ANGLE TO what: " + what);
+// console.log("is what NaN: " + isNaN(what));
+// console.log("is ORIGIN NaN: " + isNaN(self.angleToOrigin));
+
+            console.log("just set curve center coords to x: " + self.currentCurveCenterCoordinates.x + ", y: " + self.currentCurveCenterCoordinates.y);
+            console.log("ANGLE TO ORIGIN: " + self.angleToOrigin);
+            console.log("ANGLE TO TARGET: " + self.angleToTarget);
+
+            self.direction = "clockwise";
+            if(self.angleToOrigin < self.angleToTarget) {
+                console.log("self.angleToOrigin < self.angleToTarget == true")
+                self.direction = "anticlockwise";
+            } else if(self.angleToTarget < self.angleToOrigin) {
+                console.log("self.angleToOrigin < self.angleToTarget == false")
+            }
+            //console.log("is ORIGIN NaN: " + isNaN(self.angleToOrigin));
+            //console.log("is TARGET NaN: " + isNaN(self.angleToTarget));
+            // console.log("is ORIGIN a number: " + Number.isInteger(self.angleToOrgin));
+            // console.log("is ORIGIN parseInt a number: " + Number.isInteger(parseInt(self.angleToOrgin,10)));
+            // console.log("is ORIGIN less than TARGET: " + (self.angleToOrgin < self.angleToTarget));
+            // console.log("is ORIGIN less than 0: " + (self.angleToOrgin < 0));
+            // console.log("is parseInt(ORIGIN,10) = -90: " + (parseInt(self.angleToOrgin,10) == -90));
+            // console.log("is ORIGIN = '-90': " + (self.angleToOrgin == '-90'));
+            // console.log("is ORIGIN +'' = '-90': " + ((self.angleToOrgin +'') == '-90'));
+            // console.log("is -90 = -90: " + (-90 == -90));
+            // console.log("ANGLE TO ORIGIN: " + self.angleToOrigin);
+            // console.log("ANGLE TO ORIGIN x -1: " + (self.angleToOrigin * -1));
+            // console.log("ANGLE TO ORIGIN x -1 == 90: " + ((self.angleToOrigin * -1) == 90));
+            console.log("direction: " + self.direction);
+
+        } else {
+            self.currentlyOnCurve = false;
+            // reset other curve related vars???
+
+        }
+
+    };
+
     self.MoveToNewTile = function() {
         console.log("in movetonewtile")
         var moveToTile = self.GetTileToMoveTo();
@@ -141,9 +217,12 @@ var TrainModel = function(game, tile, connection, origin, target) {
                     self.currentCoordinates = self.GetCoordinatesForConnectionPoint(self.originOnTile);
                     self.targetCoordinates = self.GetCoordinatesForConnectionPoint(self.targetOnTile);
                     self.theta = angle(self.currentCoordinates.x, self.currentCoordinates.y, self.targetCoordinates.x, self.targetCoordinates.y);
-                    console.log("new angle is " + self.theta)
-                    self.theta_radians = self.theta * (Math.PI/180);     
-                    console.log("new theta_radians is " + self.theta_radians)                   
+                    console.log("new angle is " + self.theta);
+                    self.theta_radians = self.theta * (Math.PI/180);
+                    console.log("new theta_radians is " + self.theta_radians);
+
+                    self.SetupMovedToTileCurveDetails();
+
                     return true;
                 }
                 if(connect.side2 == sideToFind  && connect.fromEdge2 == fromEdge && connect.trackType == trackType) {
@@ -156,11 +235,14 @@ var TrainModel = function(game, tile, connection, origin, target) {
                     console.log("new angle is " + self.theta)
                     self.theta_radians = self.theta * (Math.PI/180);
                     console.log("new theta_radians is " + self.theta_radians)
+
+                    self.SetupMovedToTileCurveDetails();
+
                     return true;
                 }
             }
             // we shouldn't get here!
-            console.log("we found a neighbouring tile with a match but then couldn't move to it???????");
+            console.log("we found a neighbouring tile with a match but then couldn't move to it??????? lets panic");
         }
         return false;
     }
@@ -169,7 +251,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
         var distance = 5;
 
         var distanceToTarget = self.DistanceToTarget();
-        console.log("distanceToTarget: " + distanceToTarget)
+        //console.log("distanceToTarget: " + distanceToTarget)
         //console.log("self.theta: " + self.theta)
         //console.log("self.theta_radians: " + self.theta_radians)
         if(distanceToTarget == 0) {
