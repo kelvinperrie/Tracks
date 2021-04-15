@@ -64,7 +64,10 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         // todo, where you gunna put these
         self.trains = [];
         //var train = new TrainModel(self, gameData.tiles[0], gameData.tiles[0].connections[0], { side: gameData.tiles[0].connections[0].side1, fromEdge: gameData.tiles[0].connections[0].fromEdge1 }, { side: gameData.tiles[0].connections[0].side2, fromEdge: gameData.tiles[0].connections[0].fromEdge2 })
-        var train = new TrainModel(self, gameData.tiles[7]);
+        var train = new TrainModel(self, gameData.tiles[2]);
+        self.trains.push(train);
+
+        var train = new TrainModel(self, gameData.tiles[1]);
         self.trains.push(train);
 
     };
