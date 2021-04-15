@@ -201,7 +201,11 @@ var TrainModel = function(game, tile, connection, origin, target) {
             //console.log("ANGLE TO TARGET: " + self.angleToTarget);
 
             self.direction = "clockwise";
-            if(self.angleToOrigin < self.angleToTarget) {
+            if(self.angleToOrigin == 270 && self.angleToTarget == 0) {
+                self.angleIncrement = 5;
+            } else if(self.angleToOrigin == 0 && self.angleToTarget == 270) {
+                self.angleIncrement = -5;
+            } else if(self.angleToOrigin < self.angleToTarget) {
                 //console.log("self.angleToOrigin < self.angleToTarget == true")
                 //self.direction = "anticlockwise";
                 self.angleIncrement = 5;
@@ -209,7 +213,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
                 //console.log("self.angleToTarget < self.angleToOrigin == true")
                 self.angleIncrement = -5;
             }
-
+            console.log("Hello. The angle to the origin is " + self.angleToOrigin + " and the angle to the target is " + self.angleToTarget +" which has resulted in an angleincrement of " + self.angleIncrement)
             //console.log("angleIncrement: " + self.angleIncrement);
             // put our current curve angle at the start of the connection
             self.currentCurveAngle = self.angleToOrigin;
@@ -279,7 +283,12 @@ var TrainModel = function(game, tile, connection, origin, target) {
 
         if(self.currentlyOnCurve == true) {
 
-            if(self.currentCurveAngle == self.angleToTarget) {
+            // how far have we travelled?
+            var travelled = Math.abs(self.currentCurveAngle - self.angleToOrigin);
+            console.log("so far we have travelled " + travelled);
+
+            //if(self.currentCurveAngle == self.angleToTarget) {
+            if(travelled >= 90) {
                 // we're at our target, so either move to a new tile or turn around
                 var distance = 5;
                 if(self.MoveToNewTile()) {
@@ -365,6 +374,6 @@ function angle(cx, cy, ex, ey) {
     var dx = ex - cx;
     var theta = Math.atan2(dy, dx); // range (-PI, PI]
     theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-    //if (theta < 0) theta = 360 + theta; // range [0, 360)
+    if (theta < 0) theta = 360 + theta; // range [0, 360)
     return theta;
 }
