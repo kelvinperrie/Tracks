@@ -3,6 +3,11 @@ var level0 = {
     title : "Testing 'done' popup",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
+    trains: [
+        {
+            startTileId: 2
+        }
+    ],
     tiles : [
         {
             x: 1,

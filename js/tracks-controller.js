@@ -2,7 +2,7 @@
 var GameControllerModel = function(settings) {
     var self = this;
 
-    self.currentLevel = 1;
+    self.currentLevel = 0;
     self.settings = settings;
     self.gameData = gameData;
 

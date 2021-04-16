@@ -31,6 +31,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
     self.SetupBoard = function(gameData) {
         self.gameData = gameData;
         
+        console.log(gameData);
         // setup the size of the canvas - I guess they can be different sizes?
         // we set the values in the attributes rather than in the css because otherwise some weird scaling thing happens
         var canvasWidth = self.tileWidth * self.gameData.tileCountInWidth;
@@ -46,6 +47,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
             self.board[i] = Array(gameData.tileCountInWidth).fill({});
         }
 
+        self.trains = [];
         // for each tile we have in our game data, put its details into the board
         for(var i = 0; i < gameData.tiles.length; i++) {
             var newTile = gameData.tiles[i];
@@ -57,18 +59,34 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
                 if(!newTile.connections[c].hasOwnProperty('trackType')) {
                     newTile.connections[c].trackType = 1;
                 }
+                if(!newTile.connections[c].hasOwnProperty('fromEdge1')) {
+                    newTile.connections[c].fromEdge1 = 50;
+                }
+                if(!newTile.connections[c].hasOwnProperty('fromEdge2')) {
+                    newTile.connections[c].fromEdge2 = 50;
+                }
             }
             self.board[newTile.y][newTile.x] = newTile;
+
+            // any trains on this tile?
+            if(gameData.trains) {
+                for(var j = 0; j < gameData.trains.length; j++) {
+                    console.log("compare " + newTile.id + " with " + gameData.trains[j].startTileId)
+                    if(gameData.trains[j].startTileId == newTile.id) {
+                        var train = new TrainModel(self, newTile);
+                        self.trains.push(train);
+                    }
+                }
+            }
+    
         }
 
-        // todo, where you gunna put these
-        self.trains = [];
         //var train = new TrainModel(self, gameData.tiles[0], gameData.tiles[0].connections[0], { side: gameData.tiles[0].connections[0].side1, fromEdge: gameData.tiles[0].connections[0].fromEdge1 }, { side: gameData.tiles[0].connections[0].side2, fromEdge: gameData.tiles[0].connections[0].fromEdge2 })
-        var train = new TrainModel(self, gameData.tiles[2]);
-        self.trains.push(train);
+        // var train = new TrainModel(self, gameData.tiles[2]);
+        // self.trains.push(train);
 
-        var train = new TrainModel(self, gameData.tiles[1]);
-        self.trains.push(train);
+        // var train = new TrainModel(self, gameData.tiles[1]);
+        // self.trains.push(train);
 
     };
     //self.SetupBoard(self.gameData);
@@ -295,6 +313,13 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
     self.GetTileAtCoordinates = function(x,y) {
         var tile = self.board[y][x];
         return tile;
+    };
+    self.GetIndexForTileId = function(tileId) {
+        for(var i = 0; i < self.gameData.length; i--) {
+            if(self.gameData.id == tileId) {
+                return i;
+            }
+        }
     };
 
     // returns a list of tile ids that don't have connections matches up with a neighbour
