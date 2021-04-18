@@ -225,7 +225,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
                 var movedToNewTile = false;
                 // for this connection does the first connection point match?
                 if(connect.side1 == sideToFind && connect.fromEdge1 == fromEdge && connect.trackType == trackType) {
-                    console.log("FOUND TILE TO MOVE TO")
+                    //console.log("FOUND TILE TO MOVE TO")
                     self.currentConnection = connect;
                     self.originOnTile = { side: connect.side1, fromEdge: connect.fromEdge1 };
                     self.targetOnTile = { side: connect.side2, fromEdge: connect.fromEdge2 };
@@ -233,7 +233,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
                 }
                 // for this connection does the second connection point match?
                 if(connect.side2 == sideToFind  && connect.fromEdge2 == fromEdge && connect.trackType == trackType) {
-                    console.log("FOUND TILE TO MOVE TO")
+                    //console.log("FOUND TILE TO MOVE TO")
                     self.currentConnection = connect;
                     self.originOnTile = { side: connect.side2, fromEdge: connect.fromEdge2 };
                     self.targetOnTile = { side: connect.side1, fromEdge: connect.fromEdge1 };

@@ -6,30 +6,45 @@ var GameControllerModel = function(settings) {
     self.settings = settings;
     self.gameData = gameData;
 
+    self.Initialize = function() {
+        var cookieValue = getCookie("LevelCompleted");
+        console.log("cookieValue: "+ cookieValue);
+        self.currentLevel = cookieValue ?? 0;
+        self.gameModel = new GameModel(gameData[self.currentLevel], self.settings, self.LevelCompleteCallback);
+        self.LoadCurrentLevel();
+    };
+
     self.LevelCompleteCallback = function() {
-        console.log("nice.")
         self.ShowLevelCompletePopup();
     };
 
-    self.gameModel = new GameModel(gameData[self.currentLevel], self.settings, self.LevelCompleteCallback);
 
     self.CloseLevelCompletePopup = function() {
         $("#level-completion-popup").hide();
     };
     self.ShowLevelCompletePopup = function() {
+        // record the fact that this level has just been completed - over write existing
+        console.log("setting cookie to " + self.currentLevel);
+        setCookie("LevelCompleted",self.currentLevel);
+
+        document.cookie = "Testing=Crap";
+        var asdf = getCookie("Testing")
+        console.log("asdf: " + asdf)
+
+
         // give us a bit of a pause before slaming that popup in our face
         setTimeout(function() { $("#level-completion-popup").show(); } , 500);
     };
 
     self.DisplayLevelInfo = function() {
-        console.log("updating level info")
         var title = self.gameModel.gameData.level + ": " + self.gameModel.gameData.title;
-        console.log(title);
         $(".title").html(title);
         if(self.IsANextLevel()) {
             $(".next-level-trigger").addClass("clickable");
+            $(".next-level-on-popup").text("go to next level!")
         } else {
             $(".next-level-trigger").removeClass("clickable");
+            $(".next-level-on-popup").text("Nice, you've done all the levels!")
         }
         if(self.IsAPreviousLevel()) {
             $(".previous-level-trigger").addClass("clickable");
@@ -49,14 +64,12 @@ var GameControllerModel = function(settings) {
         self.LoadCurrentLevel();
     }
     self.GotoNextLevel = function() {
-        console.log("going to next level")
         if(self.IsANextLevel()) {
             self.currentLevel++;
             self.LoadCurrentLevel();
         }
     }
     self.GotoPreviousLevel = function() {
-        console.log("going to previous level")
         if(self.IsAPreviousLevel()) {
             self.currentLevel--;
             self.LoadCurrentLevel();
@@ -69,9 +82,6 @@ var GameControllerModel = function(settings) {
         return (self.currentLevel > 0);
     }
 
-    self.Initialize = function() {
-        self.LoadCurrentLevel();
-    }
     self.Initialize();
 
     $(document).ready(function() {
@@ -79,4 +89,26 @@ var GameControllerModel = function(settings) {
         $(".previous-level-trigger").on("click", self.GotoPreviousLevel);
         $(".close-popup-trigger").on("click", self.CloseLevelCompletePopup);
     });
+}
+
+
+// https://stackoverflow.com/questions/14573223/set-cookie-and-get-cookie-with-javascript
+function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
 }
