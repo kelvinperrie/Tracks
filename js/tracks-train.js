@@ -53,6 +53,8 @@ var TrainModel = function(game, tile, connection, origin, target) {
     self.angleToTarget = 0;                     // the agnle we have to get to
     self.angleIncrement = 0;                    // how much angle we're going to change on each movement
 
+    self.trainColour = self.game.colours["train"+self.currentConnection.trackType];
+
     self.Create = function() {
         
     };
@@ -321,7 +323,7 @@ var TrainModel = function(game, tile, connection, origin, target) {
     self.Draw = function(ctx) {
         ctx.save();
         ctx.beginPath();
-        ctx.strokeStyle = "#FFAA66";
+        ctx.strokeStyle = self.trainColour;
         ctx.arc(self.currentCoordinates.x, self.currentCoordinates.y, 4, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.restore();

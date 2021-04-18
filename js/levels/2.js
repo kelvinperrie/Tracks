@@ -3,6 +3,11 @@ var level2 = {
     title : "Choo Choo",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
+    trains: [
+        {
+            startTileId: 2
+        }
+    ],
     tiles : [
         {
             x: 2,

@@ -3,6 +3,14 @@ var level4 = {
     title : "Multitrack drift",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
+    trains: [
+        {
+            startTileId: 1
+        },
+        {
+            startTileId: 2
+        }
+    ],
     tiles : [
         {
             x: 1,

@@ -13,7 +13,9 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         default: "#552255",
         moveable: "#993366",
         track1: "#FFAA66",
+        train1: "#FFAA66",
         track2: "#FFF",
+        train2: "#FFF",
         selection: "#FFFFFF"
     }
     self.levelCompleteCallback = levelCompleteCallback;

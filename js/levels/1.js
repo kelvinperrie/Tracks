@@ -3,6 +3,11 @@ var level1 = {
     title : "Hello World",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
+    trains: [
+        {
+            startTileId: 2
+        }
+    ],
     tiles : [
         {
             x: 2,
@@ -25,7 +30,7 @@ var level1 = {
                 { 
                     side1: "top",
                     fromEdge1: 50,
-                    side2: "bottom",
+                    side2: "right",
                     fromEdge2: 50
                 }
             ]
