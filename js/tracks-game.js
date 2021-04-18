@@ -33,7 +33,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
     self.SetupBoard = function(gameData) {
         self.gameData = gameData;
         
-        console.log(gameData);
+        //console.log(gameData);
         // setup the size of the canvas - I guess they can be different sizes?
         // we set the values in the attributes rather than in the css because otherwise some weird scaling thing happens
         var canvasWidth = self.tileWidth * self.gameData.tileCountInWidth;
@@ -73,7 +73,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
             // any trains on this tile?
             if(gameData.trains) {
                 for(var j = 0; j < gameData.trains.length; j++) {
-                    console.log("compare " + newTile.id + " with " + gameData.trains[j].startTileId)
+                    //console.log("compare " + newTile.id + " with " + gameData.trains[j].startTileId)
                     if(gameData.trains[j].startTileId == newTile.id) {
                         var train = new TrainModel(self, newTile);
                         self.trains.push(train);
@@ -244,16 +244,16 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
                 // is the selected tile the same as the one just clicked? if yes then deselected it, if no then select the clicked one
                 if(self.selectedTile.id == clickedTile.id) {
                     self.ClearSelectedTile();
-                    console.log("clicked the selected tile again, so clearing selected")
+                    //console.log("clicked the selected tile again, so clearing selected")
                 } else {
                     // swap the tile positions
-                    console.log("should swap the tiles")
+                    //console.log("should swap the tiles")
                     self.SwapTiles(clickedTile, self.selectedTile);
                     self.ClearSelectedTile();
                     self.CheckForCompletion();
                 }
             } else {
-                console.log("setting tile as selected")
+                //console.log("setting tile as selected")
                 self.SetSelectedTile(clickedTile);
             }
         } else {
@@ -267,7 +267,7 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         // if we're in the editor then do nothing
         if(self.IsEditorActive()) return;
         var noMatches = self.CheckAllConnectionsHaveMatches();
-        console.log(noMatches);
+        //console.log(noMatches);
         if(noMatches.length == 0) {
             self.NotifyLevelComplete();
         }
