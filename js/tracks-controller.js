@@ -7,8 +7,13 @@ var GameControllerModel = function(settings) {
     self.gameData = gameData;
 
     self.Initialize = function() {
+        // see if there is a cookie saying the last level they completed, if so load the next level
         var cookieValue = getCookie("LevelCompleted");
-        console.log("cookieValue: "+ cookieValue);
+        if(cookieValue) {
+            if(cookieValue < self.gameData.length-1) {
+                cookieValue++;
+            }
+        }
         self.currentLevel = cookieValue ?? 0;
         self.gameModel = new GameModel(gameData[self.currentLevel], self.settings, self.LevelCompleteCallback);
         self.LoadCurrentLevel();
@@ -18,20 +23,12 @@ var GameControllerModel = function(settings) {
         self.ShowLevelCompletePopup();
     };
 
-
     self.CloseLevelCompletePopup = function() {
         $("#level-completion-popup").hide();
     };
     self.ShowLevelCompletePopup = function() {
         // record the fact that this level has just been completed - over write existing
-        console.log("setting cookie to " + self.currentLevel);
         setCookie("LevelCompleted",self.currentLevel);
-
-        document.cookie = "Testing=Crap";
-        var asdf = getCookie("Testing")
-        console.log("asdf: " + asdf)
-
-
         // give us a bit of a pause before slaming that popup in our face
         setTimeout(function() { $("#level-completion-popup").show(); } , 500);
     };
@@ -39,6 +36,7 @@ var GameControllerModel = function(settings) {
     self.DisplayLevelInfo = function() {
         var title = self.gameModel.gameData.level + ": " + self.gameModel.gameData.title;
         $(".title").html(title);
+        // make links clickable/non-clickable or something
         if(self.IsANextLevel()) {
             $(".next-level-trigger").addClass("clickable");
             $(".next-level-on-popup").text("go to next level!")
