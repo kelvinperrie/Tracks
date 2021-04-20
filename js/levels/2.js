@@ -1,6 +1,6 @@
 var level2 = {
     level: 2,
-    title : "Choo Choo",
+    title : "Can't move that tile",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
     trains: [

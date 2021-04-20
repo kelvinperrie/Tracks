@@ -1,6 +1,6 @@
 var level1 = {
     level: 1,
-    title : "Hello World",
+    title : "Loop with a twist",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
     trains: [

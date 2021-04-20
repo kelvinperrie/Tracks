@@ -1,6 +1,6 @@
 var level0 = {
     level: 0,
-    title : "Testing 'done' popup",
+    title : "The Hello World of tracks",
     tileCountInWidth : 6,
     tileCountInHeight : 5,
     trains: [
