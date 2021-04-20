@@ -10,6 +10,26 @@ canvas {
     background-color: #552255;
 }
 
+.instructions {
+    text-align: left;
+    padding: 10px;
+    background-color: #552255;
+    height: 140px;
+    color: #efefef;
+}
+.instructions-actions {
+}
+.instructions-show-trigger {
+    position: absolute;
+    bottom: 5px;
+    left: 15px;
+}
+.instructions-close-trigger {
+    text-align: right;
+    text-decoration: underline;
+    float: right;
+}
+
 .clickable {
     cursor: pointer;
     user-select: none;

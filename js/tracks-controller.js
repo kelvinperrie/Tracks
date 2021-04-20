@@ -79,6 +79,12 @@ var GameControllerModel = function(settings) {
     self.IsAPreviousLevel = function() {
         return (self.currentLevel > 0);
     }
+    self.CloseInstructions = function() {
+        $(".instructions").hide();
+    };
+    self.ShowInstructions = function() {
+        $(".instructions").show();
+    };
 
     self.Initialize();
 
@@ -86,6 +92,8 @@ var GameControllerModel = function(settings) {
         $(".next-level-trigger").on("click", self.GotoNextLevel);
         $(".previous-level-trigger").on("click", self.GotoPreviousLevel);
         $(".close-popup-trigger").on("click", self.CloseLevelCompletePopup);
+        $(".instructions-close-trigger").on("click", self.CloseInstructions);
+        $(".instructions-show-trigger").on("click", self.ShowInstructions);
     });
 }
 

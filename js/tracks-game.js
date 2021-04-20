@@ -161,16 +161,24 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
                             self.ctx.fillText(tile.id, xpos, ypos + 20);
                         }
                         // draw a guide around each square if the editor is active
-                        //console.log("wow, editor is " + self.IsEditorActive());
-                        if(self.IsEditorActive()) {
-                            self.ctx.save();
-                            self.ctx.strokeStyle = "#fff";
-                            self.ctx.lineWidth = "1";
-                            self.ctx.beginPath();
-                            self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
-                            self.ctx.stroke();
-                            self.ctx.restore();
-                        }
+                        // if(self.IsEditorActive()) {
+                        //     self.ctx.save();
+                        //     self.ctx.strokeStyle = "#fff";
+                        //     self.ctx.lineWidth = "1";
+                        //     self.ctx.beginPath();
+                        //     self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
+                        //     self.ctx.stroke();
+                        //     self.ctx.restore();
+                        // } else {
+                        // put a border around the tiles to show edges and help the user identify each tile
+                        self.ctx.save();
+                        self.ctx.strokeStyle = self.colours.default;
+                        self.ctx.lineWidth = "1";
+                        self.ctx.beginPath();
+                        self.ctx.rect(xpos,ypos,self.tileWidth,self.tileHeight);
+                        self.ctx.stroke();
+                        self.ctx.restore();
+                        
                         // draw any connections on this tile
                         if(tile.connections) {
                             for(var c = 0; c < tile.connections.length; c++) {
