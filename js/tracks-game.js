@@ -16,6 +16,8 @@ var GameModel = function(gameData, settings, levelCompleteCallback) {
         train1: "#FFAA66",
         track2: "#FFF",
         train2: "#FFF",
+        track3: "#66BAFF",
+        train3: "#66BAFF",
         selection: "#FFFFFF"
     }
     self.levelCompleteCallback = levelCompleteCallback;
