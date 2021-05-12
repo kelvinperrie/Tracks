@@ -3,11 +3,13 @@ body {
     font-family: 'Hind Siliguri', sans-serif !important;
     background-color: #331133;
     color: #fff;
+    touch-action: manipulation;
 }
 
 canvas {
     /* border: 1px solid #d0d0d0; */
     background-color: #552255;
+    touch-action: manipulation;
 }
 
 .instructions {
