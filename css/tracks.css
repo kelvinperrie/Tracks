@@ -16,20 +16,20 @@ canvas {
     text-align: left;
     padding: 10px;
     background-color: #552255;
-    height: 140px;
+    /* height: 140px; */
     color: #efefef;
-}
-.instructions-actions {
 }
 .instructions-show-trigger {
     position: absolute;
     bottom: 5px;
     left: 15px;
 }
-.instructions-close-trigger {
-    text-align: right;
-    text-decoration: underline;
-    float: right;
+.instructions-actions {
+    text-align: center;
+}
+.instructions-actions .btn-primary:hover {
+    background-color: #DD6655;
+    border-color: #DD6655;
 }
 
 .clickable {
@@ -108,4 +108,14 @@ canvas {
 .next-level-on-popup{
     text-align: right;
     margin: .25em;
+}
+.btn-primary {
+    color: #fff;
+    background-color: #FFAA66;
+    border-color: #FFAA66;
+}
+.btn-primary:hover {
+    color: #fff;
+    background-color: #552255;
+    border-color: #552255;
 }
