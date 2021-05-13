@@ -12,3 +12,9 @@ https://multitracks.netlify.app/
 * the trains.js is just ridiculous, maybe split out the curved vs straight logic into their own methods
 
 ![Example 1](tracks-example01.gif?raw=true "example 1")
+
+
+The editor:
+
+![Example 2](tracks-example02.gif?raw=true "example 2")
+
