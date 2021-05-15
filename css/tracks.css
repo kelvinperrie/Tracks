@@ -46,6 +46,13 @@ canvas {
     background-image: url("../images/header-background.png");
     background-color: #DD6655;
 }
+.github-image{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    height: 25px;
+    width: 25px;
+}
 .menu-bar {
     width: 100%;
     text-align: right;
